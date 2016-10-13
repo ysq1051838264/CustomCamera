@@ -1,0 +1,82 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <SurfaceView
+            android:id="@+id/my_surfaceView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+    </SurfaceView>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <RelativeLayout
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <ImageButton
+                    android:id="@+id/openLight"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/camera_flash_off"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            <ImageButton
+                    android:id="@+id/cameraSwitch"
+                    android:src="@drawable/camera_flip"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+                android:id="@+id/bootomRly"
+                android:layout_alignParentBottom="true"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <ImageView
+                    android:id="@+id/back"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:padding="5dp"
+                    android:src="@drawable/camera_back" />
+
+            <Button
+                    android:id="@+id/take_photo"
+                    android:background="@drawable/btn_take_photo"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_centerInParent="true"/>
+
+            <ImageView
+                    android:id="@+id/next"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:padding="5dp"
+                    android:src="@drawable/camera_library" />
+        </RelativeLayout>
+
+        <View
+                android:id="@+id/focus_index"
+                android:layout_above="@+id/bootomRly"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/cam_focus"
+                android:visibility="invisible"/>
+    </RelativeLayout>
+</FrameLayout>
