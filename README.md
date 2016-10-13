@@ -1,7 +1,7 @@
 # CustomCamera
 自定义相机,有聚焦、闪光灯、以及连续拍照、查看等功能
 
-![alt tag](https://raw.githubusercontent.com/ysq1051838264/CustomCamera/master/1.jpg
+![image](https://github.com/ysq1051838264/CustomCamera/blob/master/1.jpg)
 
 ###Camera控制拍照的过程
 
