@@ -20,7 +20,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -110,15 +109,14 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         bootomRly = findViewById(R.id.bootomRly);
 
         ImageView image1 = (ImageView) findViewById(R.id.back);
-        ImageView next = (ImageView) findViewById(R.id.next);
-        Button button = (Button) findViewById(R.id.take_photo);
-        ImageButton imageButton = (ImageButton) findViewById(R.id.openLight);
+        ImageView next = (ImageView) findViewById(R.id.lookPictureIv);
+        Button button = (Button) findViewById(R.id.takePhoto);
         ImageButton imageButton2 = (ImageButton) findViewById(R.id.cameraSwitch);
 
         image1.setOnClickListener(this);
         next.setOnClickListener(this);
         button.setOnClickListener(this);
-        imageButton.setOnClickListener(this);
+        openLight.setOnClickListener(this);
         imageButton2.setOnClickListener(this);
     }
 
@@ -126,9 +124,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         holder = mSurfaceView.getHolder();
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         holder.addCallback(this); // 回调接口
-
-        ViewGroup.LayoutParams layout = bootomRly.getLayoutParams();
-        layout.height = CameraUtil.screenHeight - CameraUtil.screenWidth * 5 / 3;
 
         bootomRly.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -421,8 +416,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         }
 
-        //这里第三个参数为最小尺寸 getPropPreviewSize方法会对从最小尺寸开始升序排列 取出所有支持尺寸的最小尺寸
-        Camera.Size previewSize = CameraUtil.getInstance().getPropPreviewSize(parameters.getSupportedPreviewSizes(), 1000);
+        Camera.Size previewSize = CameraUtil.findBestPreviewResolution(camera);
         parameters.setPreviewSize(previewSize.width, previewSize.height);
 
         Camera.Size pictrueSize = CameraUtil.getInstance().getPropPictureSize(parameters.getSupportedPictureSizes(), 1000);
@@ -433,6 +427,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         int picHeight = CameraUtil.screenWidth * previewSize.width / previewSize.height;
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(CameraUtil.screenWidth, picHeight);
         mSurfaceView.setLayoutParams(params);
+
     }
 
     //将bitmap保存在本地，然后通知图库更新
@@ -472,7 +467,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 finish();
                 break;
 
-            case R.id.next:
+            case R.id.lookPictureIv:
                 //指定照片
 //                            File appDir = new File(Environment.getExternalStorageDirectory(), "轻牛");
 //                            intent.setDataAndType(Uri.fromFile(appDir), "image/*");
@@ -484,7 +479,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 startActivity(intent);
                 break;
 
-            case R.id.take_photo:
+            case R.id.takePhoto:
                 if (safeToTakePicture) {
                     safeToTakePicture = false;
                     mCamera.takePicture(null, null, mJpeg);
