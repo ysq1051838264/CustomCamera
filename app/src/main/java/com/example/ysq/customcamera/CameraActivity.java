@@ -1,6 +1,8 @@
 package com.example.ysq.customcamera;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,7 +15,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -27,6 +31,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.tbruyelle.rxpermissions.Permission;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,6 +62,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     Camera.Parameters parameters;
     private Handler handler = new Handler();
     boolean safeToTakePicture = true;
+    RxPermissions rxPermissions;
 
     /* 图像数据处理完成后的回调函数 */
     private Camera.PictureCallback mJpeg = new Camera.PictureCallback() {
@@ -103,6 +111,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     }
 
     private void initView() {
+        rxPermissions = RxPermissions.getInstance(this);
+
         mSurfaceView = (SurfaceView) findViewById(R.id.my_surfaceView);
         openLight = (ImageButton) findViewById(R.id.openLight);
         focusIndex = findViewById(R.id.focus_index);
@@ -480,10 +490,36 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 break;
 
             case R.id.takePhoto:
-                if (safeToTakePicture) {
-                    safeToTakePicture = false;
-                    mCamera.takePicture(null, null, mJpeg);
-                }
+                rxPermissions.requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new DefaultSubscriber<Permission>() {
+                    @Override
+                    public void onNext(Permission permission) {
+                        if (permission.granted) {
+                            if (safeToTakePicture) {
+                                safeToTakePicture = false;
+                                mCamera.takePicture(null, null, mJpeg);
+                            }
+                        } else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
+                            builder.setMessage("您未授权读取本地相册权限,将无法打开相册,请在权限管理中开启存储权限")
+                                    .setTitle("提示").setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Uri packageURI = Uri.parse("package:" + getPackageName());
+                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
+                                    startActivity(intent);
+                                }
+                            }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            builder.create().show();
+
+                        }
+                    }
+                });
+
                 break;
 
             case R.id.openLight:
